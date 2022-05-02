@@ -15,7 +15,7 @@ permissions:
 
 
 jobs:
-  build:
+  build-push-images:
     name: Budowa i publikacja obrazow na rozne architektury
     runs-on: ubuntu-latest
     steps:
