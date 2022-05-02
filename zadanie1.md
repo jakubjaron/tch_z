@@ -158,6 +158,6 @@ jobs:
 
 Wynik działania.
 
-![screen9](/images/img9.png)
+![screen9](/images/img10.png)
 
 
