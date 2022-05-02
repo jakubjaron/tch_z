@@ -17,7 +17,7 @@ permissions:
 jobs:
   build:
     name: Budowa i publikacja obrazow na rozne architektury
-    runs-on: alpine-latest
+    runs-on: ubuntu-latest
     steps:
           
       - name: Checkout
