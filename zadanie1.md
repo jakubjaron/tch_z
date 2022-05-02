@@ -156,4 +156,8 @@ jobs:
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 ```
 
+Wynik działania.
+
+![screen9](/images/img9.png)
+
 
