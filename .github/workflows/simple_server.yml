@@ -1,5 +1,4 @@
 name: Github Actions simple node server
-
 on:
   
   push:
