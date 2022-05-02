@@ -1,16 +1,14 @@
-#3a6c3f44-53bf-4b34-96bb-e7c86382a8b4
 name: Github Actions simple node server
 
 on:
-  workflow_dispatch
+  
   push:
-    branches:
-      - 'main'
-    tags:
-      - 'v*.*.*'
+    branches: [main]
+      
+    
   pull_request:
-    branches:
-      - 'main'
+    branches: [main]
+      
 #uprawnienia potrzebne do jeśli wysyłane do ghcr.io
 permissions: 
   packages: write
