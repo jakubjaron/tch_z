@@ -203,4 +203,47 @@ Czas wykonania po zastosowaniu cache - 32s.
 
 
 
+## Dodatek 2
 
+a. 
+
+```docker
+sudo docker run -d -p 6677:80 --restart always --name registry registry:latest
+```
+
+b.
+
+Pobranie obrazu ubuntu w najnowszej wersji.
+
+```bash
+sudo docker pull ubuntu:latest
+```
+
+Dodanie tagu do obrazu
+
+```
+sudo docker tag ubuntu:latest localhost:6677/ubuntu-img
+
+```
+Dodanie obrazu do lokalnego rejestru działającym na porcie 6677.
+```
+sudo docker push localhost:6677/ubuntu-img
+
+```
+Usunięcie lokalnych obrazów, aby przetestować prywatny rejestr.
+```
+sudo docker image remove ubuntu:latest
+
+sudo docker image remove localhost:6677/ubuntu-img
+
+
+```
+
+Pobranie naszego obrazu z rejestru prywatnego.
+
+```
+sudo docker pull localhost:6677/ubuntu-img
+
+```
+
+![screen](/images/registry.png)
