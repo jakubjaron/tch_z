@@ -1,5 +1,5 @@
 #budowanie obrazu from sratch
-FROM scratch 
+ FROM scratch 
 #ustawienie podstawowych informacji za pomocą tagu LABEL
 LABEL version="v1" author="Jakub Jaron"
 #Dodanie obrazu systemu na którym postawiono serwer
