@@ -73,7 +73,7 @@ Potwierdzenie zbudowanych obrazów.
 ```bash
 sudo docker buildx imagetools inspect kubi8/simple_node_server:v1
 ```
-![screen9](/images/img9.png)
+![screen9](/images/img11.png)
 
 
 ## Dodatek 1
@@ -160,4 +160,5 @@ Wynik działania.
 
 ![screen9](/images/img10.png)
 
+Czas wykonania bez cache.
 
