@@ -78,6 +78,33 @@ sudo docker buildx imagetools inspect kubi8/simple_node_server:v1
 
 ## Dodatek 1
 simple_server.yaml
+
+W pliku yaml konfigurujemy kolejno
+
+na jakiej gałęzi będzie wykonywany workflow po użyciu commit w tym przypadku w gałęzi main.
+
+Ustawiamy zmienne środowiskowe nazwa rejestru i obrazu w tym przypadku nazwa naszego repozytorium.
+
+Przydzielamy uprawnienia dla naszego GITHUB_TOKEN - read, write.
+
+Zadanie jest uruchamiane na najnowszej wersji Ubuntu.
+
+Kolejno kroki:
+
+Sprawdzamy repozytorium - checkout
+
+Konfigurujemy qemu, dokcer buildx.
+
+Ustawiamy eksport cache.
+
+Logujemy się do GitHub Container registry, używamy naszego GITHUB_TOKENA i nazwy użytkowanika repozytorium.
+
+Eksportujemy tagi i nagłówki które będą zastosowane do naszego obrazu.
+
+Następnie budujemy obraz na podstawie naszego Dockerfile znajdującym się w naszym repozytorium i psuhujemy go do Github Package Repository.
+
+Na koniec jeszcze przenosimy cache.
+
 ```yaml
 name: Github Actions simple node server
 on:
@@ -86,8 +113,13 @@ on:
   pull_request:
     branches: [main]     
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 #uprawnienia potrzebne do jeśli wysyłane do ghcr.io
 permissions: 
+  contents: read
   packages: write
 
 
@@ -123,42 +155,52 @@ jobs:
         if: github.event_name != 'pull_request'
         uses: docker/login-action@v1
         with:
-          registry: ghcr.io
+          registry: ${{ env.REGISTRY }}
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      #logowanie do Dockerhub
-      - name: Login to Docker Hub
-        if: github.event_name != 'pull_request'
-        uses: docker/login-action@v1
+      
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
         with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+      
 
       
-      #Zbudowanie obrazów i wysłanie na Docker Hub
-      - name: Build and push
-        id: dokcer_build
-        uses: docker/build-push-action@v2
+      - name: Build and push Docker image
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         with:
           context: ./
           file: ./zad1/Dockerfile
           platforms: linux/arm/v7,linux/arm64/v8,linux/amd64
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: kubi8/simple_node_server:v2
-          #eksportowanie cache
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+           #eksportowanie cache
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
+
           
       #przeniesienie cache do wskazanego folderu.
       - name: Move cache
         run: |
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+
 ```
 
 Wynik działania.
 
 ![screen9](/images/img10.png)
 
-Czas wykonania bez cache.
+Czas wykonania bez cache - 59s.
+
+![screen10](/images/bez_cache.png)
+
+Czas wykonania po zastosowaniu cache - 32s.
+
+![screen11](/images/z_cache.png)
+
+
+
 
