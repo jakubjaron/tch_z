@@ -1,14 +1,10 @@
 name: Github Actions simple node server
-
 on:
-  
   push:
-    branches: [main]
-      
-    
+    branches: [main]    
   pull_request:
-    branches: [main]
-      
+    branches: [main]     
+
 #uprawnienia potrzebne do jeśli wysyłane do ghcr.io
 permissions: 
   packages: write
@@ -19,28 +15,29 @@ jobs:
     name: Budowa i publikacja obrazow na rozne architektury
     runs-on: ubuntu-latest
     steps:
-          
+       #Sprawdzenie kodu   
       - name: Checkout
         uses: actions/checkout@v2
 
-      # https://github.com/docker/setup-qemu-action
+      #ustawienie QEMU
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
-      # https://github.com/docker/setup-buildx-action
-
+      
+      # ustawienie Docker buildx
       - name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v1
 
+      #Ustawienie eksportu cache
+      #- name: Cache Docker layers
+      #  uses: actions/cache@v2
+      #  with:
+      #    path: /tmp/.buildx-cache
+      #    key: ${{ runner.os }}-single-buildx-${{ github.sha }}
+      #    restore-keys: |
+       #     ${{ runner.os }}-single-buildx
 
-      - name: Cache Docker layers
-        uses: actions/cache@v2
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-single-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-single-buildx
-
+      #logowanie do Github container registry
       - name: Login to GHCR
         if: github.event_name != 'pull_request'
         uses: docker/login-action@v1
@@ -48,7 +45,7 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
+      #logowanie do Dockerhub
       - name: Login to Docker Hub
         if: github.event_name != 'pull_request'
         uses: docker/login-action@v1
@@ -57,7 +54,7 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
       
-
+      #Zbudowanie obrazów i wysłanie na Docker Hub
       - name: Build and push
         id: dokcer_build
         uses: docker/build-push-action@v2
@@ -67,10 +64,12 @@ jobs:
           platforms: linux/arm/v7,linux/arm64/v8,linux/amd64
           push: ${{ github.event_name != 'pull_request' }}
           tags: kubi8/simple_node_server:v2
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new
+          #eksportowanie cache
+          #cache-from: type=local,src=/tmp/.buildx-cache
+          #cache-to: type=local,dest=/tmp/.buildx-cache-new
           
-      - name: Move cache
-        run: |
-          rm -rf /tmp/.buildx-cache
-          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+      #przeniesienie cache do wskazanego folderu.
+      #- name: Move cache
+      #  run: |
+       #   rm -rf /tmp/.buildx-cache
+       #   mv /tmp/.buildx-cache-new /tmp/.buildx-cache
