@@ -204,11 +204,12 @@ Czas wykonania po zastosowaniu cache - 32s.
 
 
 ## Dodatek 2
+### 1.
 
 a. 
 
 ```docker
-sudo docker run -d -p 6677:80 --restart always --name registry registry:latest
+sudo docker run -d -p 6677:5000 --restart always --name registry registry:latest
 ```
 
 b.
@@ -247,3 +248,28 @@ sudo docker pull localhost:6677/ubuntu-img
 ```
 
 ![screen](/images/registry.png)
+
+
+### 2.
+
+
+Utworzenie pliku zawierający nazwe użytkownika i hasło.
+
+```
+sudo docker run --entrypoint htpasswd httpd:2 -Bbn testuser testpassword > auth/htpasswd
+
+```
+
+```
+sudo docker run -d   -p 6677:5000   --restart=always   --name registry2   -v "$(pwd)"/auth:/auth   -e "REGISTRY_AUTH=htpasswd"   -e "REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm"   -e REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd   -v "$(pwd)"/certs:/certs   -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt   -e REGISTRY_HTTP_TLS_KEY=/certs/domain.key   registry:2
+
+```
+Próba wysłania obrazu do rejestru.
+```
+sudo docker tag ubuntu:latest localhost:6677/my-ubuntu
+
+sudo docker push localhost:6677/ubuntu-img
+```
+![dod](/images/dod2.png)
+
+
