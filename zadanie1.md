@@ -41,7 +41,7 @@ d.
 sudo docker history zad1:v2 //sprawdzenie warstw kontenera
 ```
 ![screen4](/images/img4.png)
-TU screeny wstawic.
+
 
 **Punkt 4.**
 
