@@ -257,23 +257,36 @@ sudo docker pull localhost:6677/ubuntu-img
 ### 2.
 
 
-Utworzenie pliku zawierający nazwe użytkownika i hasło.
+Utworzenie folderu do przechowania hasła i wygenerowanie loginu testuser i hasła za pomoca htpassword.
 
 ```
-sudo docker run --entrypoint htpasswd httpd:2 -Bbn testuser testpassword > auth/htpasswd
+mkdir auth
+
+htpasswd -Bc registry.password testuser
 
 ```
-Uruchomienie kkontenera z zastosowaniem htpasswd i wygenerowanego certyfikatu.
+Uruchomienie kontenera z zastosowaniem htpasswd i stowrzeniem wczesniejszego hasła i użytkownika.
 ```
-sudo docker run -d   -p 6677:5000   --restart=always   --name registry2   -v "$(pwd)"/auth:/auth   -e "REGISTRY_AUTH=htpasswd"   -e "REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm"   -e REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd   -v "$(pwd)"/certs:/certs   -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt   -e REGISTRY_HTTP_TLS_KEY=/certs/domain.key   registry:2
+sudo docker run -d   -p 6677:5000   --restart=always   --name registry_ff   -v "$(pwd)"/auth:/auth   -e "REGISTRY_AUTH=htpasswd"   -e "REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm" -e REGISTRY_AUTH_HTPASSWD_PATH=/auth/registry.password registry:2
 
 ```
-Próba wysłania obrazu do rejestru.
+Próba wysłania obrazu do rejestru przed zalogowaniem, kończy się błędem.
 ```
-sudo docker tag ubuntu:latest localhost:6677/my-ubuntu
+sudo docker tag ubuntu:latest localhost:6677/ubuntu_auth
 
-sudo docker push localhost:6677/ubuntu-img
+sudo docker push localhost:6677/ubuntu_auth
 ```
-![dod](/images/dod2.png)
+![dod](/images/img_push.png)
+
+Po zalogowaniu do prywatnego rejestru.
+
+```
+sudo docker login localhost:6677
+
+```
+
+![login](/images/login.png)
+
+
 
 
