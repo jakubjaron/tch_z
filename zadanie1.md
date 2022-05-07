@@ -189,6 +189,10 @@ jobs:
 
 ```
 
+Przesłane obrazu do Github Registry.
+
+![screen_reg](/images/github_registry.png)
+
 Wynik działania.
 
 ![screen9](/images/img10.png)
